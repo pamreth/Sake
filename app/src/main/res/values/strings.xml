@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Sake</string>
+    <string name="m_dulo_bluetooth">Módulo Bluetooth</string>
+    <string name="desconectado">Desconectado</string>
+    <string name="monitor">Monitor</string>
+    <string name="datos">Datos</string>
+</resources>
