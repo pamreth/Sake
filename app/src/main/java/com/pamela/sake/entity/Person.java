@@ -10,6 +10,8 @@ import com.reactiveandroid.annotation.PrimaryKey;
 import com.reactiveandroid.annotation.Table;
 import com.reactiveandroid.query.Select;
 
+import java.util.List;
+
 
 @Table(name = "Notes", database = AppDatabase.class)
 public class Person extends Model {
@@ -60,5 +62,8 @@ public class Person extends Model {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    public static List<Person> getPersons(){
+        return Select.from(Person.class).fetch();
     }
 }

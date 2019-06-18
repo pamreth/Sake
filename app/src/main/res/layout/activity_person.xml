@@ -14,9 +14,9 @@
         android:layout_marginTop="22dp"
         android:layout_marginEnd="33dp"
         android:orientation="vertical"
-        android:paddingLeft="18dp"
+        android:paddingLeft="10dp"
         android:paddingTop="22dp"
-        android:paddingRight="30dp"
+        android:paddingRight="10dp"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,13 +69,13 @@
                 android:hint="@string/nombre"
                 android:inputType=""
                 tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="90dp" />
+                tools:layout_editor_absoluteY="90dp"
+                android:autofillHints="" />
 
             <EditText
                 android:id="@+id/ettelefono"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/etNombres"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:autofillHints=""
@@ -98,7 +98,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
