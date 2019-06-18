@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Switch bluetoothSwitch;
     private TextView bluetoothState, display;
+    private FloatingActionButton floatingActionButton;
     private BroadcastReceiver broadcastReceiver;
     private BluetoothHandler bluetoothHandler;
     private ConnectedThread connectedThread;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         bluetoothSwitch = this.findViewById(R.id.bluetoothOnOff);
         bluetoothState = this.findViewById(R.id.moduleState);
         display =  this.findViewById(R.id.idDisplay);
+        floatingActionButton = this.findViewById(R.id.idAddPerson);
         this.handler = new Handler() {
             public void handleMessage(android.os.Message msg) {
                 if (msg.what == Utilities.RECEIVE_MESSAGE) {
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         initializeBluetoothHandler(new BluetoothHandler(BluetoothAdapter.getDefaultAdapter(), this));
+        onClickAddPerson();
     }
 
     @Override
@@ -72,6 +76,15 @@ public class MainActivity extends AppCompatActivity {
         unregisterBroadcastReceiverToBluetoothEvents();
     }
 
+    private void onClickAddPerson() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =  new Intent(MainActivity.this, PersonActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 
     private CompoundButton.OnCheckedChangeListener initializeOnCheckedChangeListener(final Switch bluetoothSwitch) {
         CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
