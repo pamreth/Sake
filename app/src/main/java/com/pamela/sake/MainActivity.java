@@ -84,8 +84,7 @@ public class MainActivity extends AppCompatActivity {
                             for (Person p : people) {
                                 sendMessages(p.getPhone(), "¡Alerta! \n\n Hola " +
                                         p.getName() +
-                                        ", este mensaje te informa que el nivel de alcohol está por encima de lo normal \n" +
-                                        "Nivel de alcohol: " + dataInPrint);
+                                        ", el emisor de este mensaje no se encuentra en condiciones para manejar, por favor intentar comunicarse, pues, su nivel de alcohol es de: " + dataInPrint);
                             }
 
                         } catch (NumberFormatException e) {
