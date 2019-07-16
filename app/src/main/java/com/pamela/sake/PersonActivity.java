@@ -63,9 +63,9 @@ public class PersonActivity extends AppCompatActivity {
                     Person personReturn = Select.from(Person.class).where("id = ? ", Long.parseLong(etid.getText().toString())).fetchSingle();
                     fillListPeople();
                     cleanFealds();
-                    Toast.makeText(getApplicationContext(), "Se guardó el dato: " + personReturn.getPhone(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Se guardó el dato: " + personReturn.getName(), Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "ya existe una persona con id: " + id, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Ya existe una persona con id: " + id, Toast.LENGTH_LONG).show();
                 }
 
 

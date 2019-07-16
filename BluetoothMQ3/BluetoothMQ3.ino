@@ -1,3 +1,6 @@
+
+//Código para enviar aviso al celular sobre la presencia de  alcohol por medio de bluetooth
+
 #include <SoftwareSerial.h> 
 SoftwareSerial BT(10,11);
 int estado = 0;     
@@ -24,7 +27,7 @@ void loop()
     Serial.print("\tEstado: ");
     Serial.println(estado);
     if(estado != HIGH ){ 
-        digitalWrite(13, HIGH);
+        digitalWrite(13, HIGH);+
         delay(100);
         String buf = String(adc_MQ, 1);
         BT.println(adc_MQ); 

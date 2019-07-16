@@ -2,9 +2,6 @@ package com.pamela.sake.exceptions;
 
 import android.app.Activity;
 
-/**
- * Created by lemme on 5/12/15.
- */
 public abstract class BluetoothException extends Exception {
     private String type;
     private String message;

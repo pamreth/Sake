@@ -17,9 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.UUID;
 
-/**
- * Created by lemme on 5/7/15.
- */
+
 public class BluetoothHandler {
     private static BluetoothAdapter bluetoothAdapter;
     private MainActivity mainActivity;

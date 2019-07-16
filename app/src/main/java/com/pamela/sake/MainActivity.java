@@ -79,12 +79,13 @@ public class MainActivity extends AppCompatActivity {
                         String dataInPrint = DataStringIN.substring(0, endOfLineIndex);
                         try {
                             int result = Integer.parseInt(dataInPrint.replace("\r\n", ""));
-                            display.setText("Datos \n\n" + "Alcohol detectado: " + result);
+                            double formula = result * (5.0 / 1023.0);
+                            display.setText("Datos \n\n" + "Alcohol detectado: " + formula);
                             List<Person> people = Person.getPersons();
                             for (Person p : people) {
                                 sendMessages(p.getPhone(), "¡Alerta! \n\n Hola " +
                                         p.getName() +
-                                        ", el emisor de este mensaje no se encuentra en condiciones para manejar, por favor intentar comunicarse, pues, su nivel de alcohol es de: " + dataInPrint);
+                                        ", el emisor de este mensaje no se encuentra en condiciones para manejar, por favor intentar comunicarse, pues, su nivel de alcohol es de: " + formula );
                             }
 
                         } catch (NumberFormatException e) {
