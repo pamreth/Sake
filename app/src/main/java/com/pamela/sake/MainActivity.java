@@ -1,6 +1,8 @@
 package com.pamela.sake;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,6 +34,9 @@ import com.reactiveandroid.ReActiveConfig;
 import com.reactiveandroid.internal.database.DatabaseConfig;
 import com.reactiveandroid.query.Select;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -78,14 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
                         String dataInPrint = DataStringIN.substring(0, endOfLineIndex);
                         try {
-                            int result = Integer.parseInt(dataInPrint.replace("\r\n", ""));
-                            double formula = result * (5.0 / 1023.0);
-                            display.setText("Datos \n\n" + "Alcohol detectado: " + formula);
+                            double result = round(Integer.parseInt(dataInPrint.replace("\r\n", "")),2);
+                            display.setText("Datos \n\n" + "Alcohol detectado: " + result);
                             List<Person> people = Person.getPersons();
                             for (Person p : people) {
-                                sendMessages(p.getPhone(), "¡Alerta! \n\n Hola " +
+                                sendSMS(p.getPhone(), "¡Alerta! \n\n Hola " +
                                         p.getName() +
-                                        ", el emisor de este mensaje no se encuentra en condiciones para manejar, por favor intentar comunicarse, pues, su nivel de alcohol es de: " + formula );
+                                        ", el emisor de este mensaje no se encuentra en condiciones para conducir; su nivel de alcohol aproximado es de: " + result );
                             }
 
                         } catch (NumberFormatException e) {
@@ -98,6 +102,14 @@ public class MainActivity extends AppCompatActivity {
         };
         initializeBluetoothHandler(new BluetoothHandler(BluetoothAdapter.getDefaultAdapter(), this));
         onClickAddPerson();
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
     @Override
@@ -227,15 +239,67 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void sendMessages(String number, String message) {
-        try {
-            SmsManager sms = SmsManager.getDefault();
-            sms.sendTextMessage(number, null, message, null, null);
-            Toast.makeText(getApplicationContext(), "Mensaje Enviado", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Mensaje no enviado, Datos incorrectos", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+    private void sendSMS(String phoneNumber, String message)
+    {
+        String SENT = "SMS_SENT";
+        String DELIVERED = "SMS_DELIVERED";
+
+        PendingIntent sentPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(SENT), 0);
+
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(this, 0,
+                new Intent(DELIVERED), 0);
+
+        //---when the SMS has been sent---
+        registerReceiver(new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                switch (getResultCode())
+                {
+                    case Activity.RESULT_OK:
+                        Toast.makeText(getBaseContext(), "SMS sent",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                        Toast.makeText(getBaseContext(), "Generic failure",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NO_SERVICE:
+                        Toast.makeText(getBaseContext(), "No service",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NULL_PDU:
+                        Toast.makeText(getBaseContext(), "Null PDU",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_RADIO_OFF:
+                        Toast.makeText(getBaseContext(), "Radio off",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(SENT));
+
+        //---when the SMS has been delivered---
+        registerReceiver(new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                switch (getResultCode())
+                {
+                    case Activity.RESULT_OK:
+                        Toast.makeText(getBaseContext(), "SMS delivered",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Toast.makeText(getBaseContext(), "SMS not delivered",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(DELIVERED));
+
+        SmsManager sms = SmsManager.getDefault();
+        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
     }
 
 }
