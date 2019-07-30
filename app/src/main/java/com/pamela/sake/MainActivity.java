@@ -10,6 +10,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -29,6 +32,7 @@ import com.pamela.sake.bluetooth.ConnectedThread;
 import com.pamela.sake.commons.Utilities;
 import com.pamela.sake.database.AppDatabase;
 import com.pamela.sake.entity.Person;
+import com.pamela.sake.services.GpsService;
 import com.reactiveandroid.ReActiveAndroid;
 import com.reactiveandroid.ReActiveConfig;
 import com.reactiveandroid.internal.database.DatabaseConfig;
@@ -39,8 +43,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements LocationListener {
     private Switch bluetoothSwitch;
     private TextView bluetoothState, display;
     private FloatingActionButton floatingActionButton;
@@ -49,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private ConnectedThread connectedThread;
     private Handler handler;
     private StringBuilder DataStringIN = new StringBuilder();
+    private LocationManager locationManager;
+    private GpsService gps;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
                 .build());
 
         setContentView(R.layout.activity_main);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
+        } else {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1000, this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1000, this);
+
+        }
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]
@@ -86,10 +99,13 @@ public class MainActivity extends AppCompatActivity {
                             double result = round(Integer.parseInt(dataInPrint.replace("\r\n", "")),2);
                             display.setText("Datos \n\n" + "Alcohol detectado: " + result);
                             List<Person> people = Person.getPersons();
+                            gps =  new GpsService(MainActivity.this);
+                            Location location = gps.getLocation();
                             for (Person p : people) {
                                 sendSMS(p.getPhone(), "¡Alerta! \n\n Hola " +
                                         p.getName() +
                                         ", el emisor de este mensaje no se encuentra en condiciones para conducir; su nivel de alcohol aproximado es de: " + result );
+                                sendSMS(p.getPhone(), "Localización:  http://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude());
                             }
 
                         } catch (NumberFormatException e) {
@@ -302,4 +318,23 @@ public class MainActivity extends AppCompatActivity {
         sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 }

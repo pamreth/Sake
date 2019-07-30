@@ -41,7 +41,7 @@
         if(estadoSensorDigital != HIGH ){ 
             detectoAlcohol(voltaje);
             Serial.print("PRESENCIA DE ALCOHOL");
-            delay(30000);
+            delay(10000);
         } else {
             digitalWrite(ledTunrOnCar, HIGH);
             sendMessageBT("No se detecta alcohol");
